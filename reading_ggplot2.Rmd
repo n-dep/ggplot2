@@ -1,0 +1,15 @@
+---
+title: "Reading ggplot2 - Elegant Graphics for Data Analysis"
+author: "ND"
+date: "`r format(Sys.time(), "%Y-%m-%d")`"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
