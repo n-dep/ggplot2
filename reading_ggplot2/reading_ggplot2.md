@@ -10,7 +10,7 @@ output:
 
 
 
-## Getting started with qplot
+## Ch 2: Getting started with qplot
 
 * Designed to resemble base plot but has some notable differences.
 * Not generic. It needs vectors as data input, ideally organised in a dataframe. So `qplot(my_mod)`, where `my_mod` is some fitted model, does not work.
@@ -21,15 +21,32 @@ output:
 
 > All in all, it seems to be better to avoid `qplot` and use ggplot directly
 
-## Mastering the grammar
+## Ch 3: Mastering the grammar
 
 A plot according to the layered grammar of ggplot2 is the combination of (*nearly verbatim from the book*):
 
 > * Default **dataset** + set of mappings from variables to aesthetics.
-> * One or more **layers**. Each layer is composed of a **geom** (geometric object), a **statistical transformation** (e.g. data -> spline smoothing line) and a **position adjustment** (position in queue of layers). Optionally, a different dataset and/or aesthetic mappings can be provided.
+> * One or more **layers**. Each layer is composed of a **geom** (geometric object), a **statistical transformation** (stat for short, e.g. data -> spline smoothing line) and a **position adjustment** (adjustments to avoid overplotting). Optionally, a different dataset and/or aesthetic mappings can be provided. So, in effect, each different layer can have a different dataset and a different aesthetic mapping.
 > * One **scale** for each aesthetic mapping. A scale maps data to aesthetic attributes (like color, size, ...) and every attribute requires a scale. The scale operates on all the data in the plot, thus ensuring consistency. A scale is a function and its inverse and parameters. The inverse is used to read values from the graph (axes for position scales or legends for other scales). Note that the inverse is not necessarily unique (i.e. the mapping is not one-to-one). Scaling is done before the statistical transformation.
 > * The **coordinate system**, or coord (e.g. Cartesian, polar, ...). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations.
 > * The faceting specs. These are used for conditional graphs. 
 
-The way these elements are encoded in R is with a list with components `data`, `mapping` (for the aesthetics), `layers`, `scales`, `coordinates`, `facet`, $\dots$. This implies that the data is effectively stored in the plot object. This also imlies that a plot object can be printed (`print()`), saved (`ggsave` or `save`) and summarized (`summary`).
+The way these elements are encoded in R is with a list with components `data`, `mapping` (for the aesthetics), `layers`, `scales`, `coordinates`, `facet`, $\dots$. This implies that the data is effectively stored in the plot object (as a copy, not a reference!). This also implies that a plot object can be printed (`print()`), saved (`ggsave` or `save`) and summarized (`summary`).
+
+## Ch 4: Build a plot layer by layer
+
+* A plot is initialised with the `ggplot` function. This function has two arguments, `data` (data.frame) and `mapping` (list of aesthetic mappings, created with the `aes` function). These two arguments set up the defaults for the entire plot. If they are not provided, each additional layer needs to have these arguments. 
+* The `data` must be a dataframe!
+* Layers are then added with `+ layer()`. The `layer` function requires quite a lot of parameters. As each geom has a default statistic and position, and every statistic has a default geom, shortcuts are available as `geom_xxx(mapping, data, ...)` or `stat_xxx(mapping, data, ...)`. Note that the default stat or geom can be overruled. 
+* Note that the order of the two main arguments of `ggplot`and `geom_xxx` (or `stat_xxx`) is reversed.
+* The data of an existing plot can be changed with `p %+% new_data`.
+
+* In the `aes`function, never refer to data outside the data frame from the data argument (e.g. `diamonds$carat`). Functions of the variables can be used (e.g. log).
+* Aesthetic mappings specified in a layer only pertain to the aesthetics of that layer (so not the entire plot).
+* There is a difference between **mapping** and **setting** aesthetics. Mapping refers to mapping an aesthetic to a variable. Setting refers to setting an aesthetic equal to a constant (e.g. `color = "red"`). Mapping is done in the `aes` function whereas setting is done as a parameter in a layer (so outside of `aes()`).
+* An important aesthetic is the **group**. Some geoms operate on multiple rows simultaneously (e.g. line, boxplot, ...). If this geom should be done separately for each group, you need to specify the group aesthetic. A good example is for longitudinal data were one draws a line, per subject. One can use `interaction()` to specify a grouping based on multiple variables. The default of group is the interaction of all discrete variables in the plot. Use `group = 1` to 'ungroup'.
+* For these collective geoms the individual aesthetics can't be used all together. For lines (defined by 2 points) the aesthetics of the first point are used. For other collective geoms the default aesthetics are used unless all components share the same aesthetics.
+
+* A stat computes, from the input data, a different dataset. This produced dataset can be used for plotting. The derived dataset can be used for plotting and variables must be between two sets of `..` to distinguish them from the original variables (with possibly the same name). Example: `ggplot(diamonds, aes(carat)) + geom_histogram(aes = ..density..)` where `..density`` is computed by the histogram geom.
+
 

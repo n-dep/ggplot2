@@ -130,8 +130,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="getting-started-with-qplot" class="section level2">
-<h2>Getting started with qplot</h2>
+<div id="ch-2-getting-started-with-qplot" class="section level2">
+<h2>Ch 2: Getting started with qplot</h2>
 <ul>
 <li>Designed to resemble base plot but has some notable differences.</li>
 <li>Not generic. It needs vectors as data input, ideally organised in a dataframe. So <code>qplot(my_mod)</code>, where <code>my_mod</code> is some fitted model, does not work.</li>
@@ -144,19 +144,35 @@ $(document).ready(function () {
 <p>All in all, it seems to be better to avoid <code>qplot</code> and use ggplot directly</p>
 </blockquote>
 </div>
-<div id="mastering-the-grammar" class="section level2">
-<h2>Mastering the grammar</h2>
+<div id="ch-3-mastering-the-grammar" class="section level2">
+<h2>Ch 3: Mastering the grammar</h2>
 <p>A plot according to the layered grammar of ggplot2 is the combination of (<em>nearly verbatim from the book</em>):</p>
 <blockquote>
 <ul>
 <li>Default <strong>dataset</strong> + set of mappings from variables to aesthetics.</li>
-<li>One or more <strong>layers</strong>. Each layer is composed of a <strong>geom</strong> (geometric object), a <strong>statistical transformation</strong> (e.g. data -&gt; spline smoothing line) and a <strong>position adjustment</strong> (position in queue of layers). Optionally, a different dataset and/or aesthetic mappings can be provided.</li>
+<li>One or more <strong>layers</strong>. Each layer is composed of a <strong>geom</strong> (geometric object), a <strong>statistical transformation</strong> (stat for short, e.g. data -&gt; spline smoothing line) and a <strong>position adjustment</strong> (adjustments to avoid overplotting). Optionally, a different dataset and/or aesthetic mappings can be provided. So, in effect, each different layer can have a different dataset and a different aesthetic mapping.</li>
 <li>One <strong>scale</strong> for each aesthetic mapping. A scale maps data to aesthetic attributes (like color, size, …) and every attribute requires a scale. The scale operates on all the data in the plot, thus ensuring consistency. A scale is a function and its inverse and parameters. The inverse is used to read values from the graph (axes for position scales or legends for other scales). Note that the inverse is not necessarily unique (i.e. the mapping is not one-to-one). Scaling is done before the statistical transformation.</li>
 <li>The <strong>coordinate system</strong>, or coord (e.g. Cartesian, polar, …). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations.</li>
 <li>The faceting specs. These are used for conditional graphs.</li>
 </ul>
 </blockquote>
-<p>The way these elements are encoded in R is with a list with components <code>data</code>, <code>mapping</code> (for the aesthetics), <code>layers</code>, <code>scales</code>, <code>coordinates</code>, <code>facet</code>, <span class="math inline">\(\dots\)</span>. This implies that the data is effectively stored in the plot object. This also imlies that a plot object can be printed (<code>print()</code>), saved (<code>ggsave</code> or <code>save</code>) and summarized (<code>summary</code>).</p>
+<p>The way these elements are encoded in R is with a list with components <code>data</code>, <code>mapping</code> (for the aesthetics), <code>layers</code>, <code>scales</code>, <code>coordinates</code>, <code>facet</code>, <span class="math inline">\(\dots\)</span>. This implies that the data is effectively stored in the plot object (as a copy, not a reference!). This also implies that a plot object can be printed (<code>print()</code>), saved (<code>ggsave</code> or <code>save</code>) and summarized (<code>summary</code>).</p>
+</div>
+<div id="ch-4-build-a-plot-layer-by-layer" class="section level2">
+<h2>Ch 4: Build a plot layer by layer</h2>
+<ul>
+<li>A plot is initialised with the <code>ggplot</code> function. This function has two arguments, <code>data</code> (data.frame) and <code>mapping</code> (list of aesthetic mappings, created with the <code>aes</code> function). These two arguments set up the defaults for the entire plot. If they are not provided, each additional layer needs to have these arguments.</li>
+<li>The <code>data</code> must be a dataframe!</li>
+<li>Layers are then added with <code>+ layer()</code>. The <code>layer</code> function requires quite a lot of parameters. As each geom has a default statistic and position, and every statistic has a default geom, shortcuts are available as <code>geom_xxx(mapping, data, ...)</code> or <code>stat_xxx(mapping, data, ...)</code>. Note that the default stat or geom can be overruled.</li>
+<li>Note that the order of the two main arguments of <code>ggplot</code>and <code>geom_xxx</code> (or <code>stat_xxx</code>) is reversed.</li>
+<li><p>The data of an existing plot can be changed with <code>p %+% new_data</code>.</p></li>
+<li>In the <code>aes</code>function, never refer to data outside the data frame from the data argument (e.g. <code>diamonds$carat</code>). Functions of the variables can be used (e.g. log).</li>
+<li>Aesthetic mappings specified in a layer only pertain to the aesthetics of that layer (so not the entire plot).</li>
+<li>There is a difference between <strong>mapping</strong> and <strong>setting</strong> aesthetics. Mapping refers to mapping an aesthetic to a variable. Setting refers to setting an aesthetic equal to a constant (e.g. <code>color = &quot;red&quot;</code>). Mapping is done in the <code>aes</code> function whereas setting is done as a parameter in a layer (so outside of <code>aes()</code>).</li>
+<li>An important aesthetic is the <strong>group</strong>. Some geoms operate on multiple rows simultaneously (e.g. line, boxplot, …). If this geom should be done separately for each group, you need to specify the group aesthetic. A good example is for longitudinal data were one draws a line, per subject. One can use <code>interaction()</code> to specify a grouping based on multiple variables. The default of group is the interaction of all discrete variables in the plot. Use <code>group = 1</code> to ‘ungroup’.</li>
+<li><p>For these collective geoms the individual aesthetics can’t be used all together. For lines (defined by 2 points) the aesthetics of the first point are used. For other collective geoms the default aesthetics are used unless all components share the same aesthetics.</p></li>
+<li><p>A stat computes, from the input data, a different dataset. This produced dataset can be used for plotting. The derived dataset can be used for plotting and variables must be between two sets of <code>..</code> to distinguish them from the original variables (with possibly the same name). Example: <code>ggplot(diamonds, aes(carat)) + geom_histogram(aes = ..density..)</code> where `..density`` is computed by the histogram geom.</p></li>
+</ul>
 </div>
 
 
