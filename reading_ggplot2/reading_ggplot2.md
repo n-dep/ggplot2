@@ -2,18 +2,13 @@
 title: "Reading ggplot2" 
 subtitle: "Elegant Graphics for Data Analysis"
 author: "ND"
-date: '`r format(Sys.time(), "%Y-%m-%d")`'
+date: '2018-09-05'
 output: 
   html_document:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library("ggplot2")
-set.seed(1410) # seed from the book
-dsmall <- diamonds[sample(nrow(diamonds), 100), ] # small dataset from the book
-```
+
 
 ## Getting started with qplot
 
@@ -25,6 +20,3 @@ dsmall <- diamonds[sample(nrow(diamonds), 100), ] # small dataset from the book
 * Uses non-standard evaluation
 
 > All in all, it seems to be better to avoid `qplot` and use ggplot directly
-
-## Mastering the grammar
-
