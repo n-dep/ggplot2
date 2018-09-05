@@ -144,6 +144,20 @@ $(document).ready(function () {
 <p>All in all, it seems to be better to avoid <code>qplot</code> and use ggplot directly</p>
 </blockquote>
 </div>
+<div id="mastering-the-grammar" class="section level2">
+<h2>Mastering the grammar</h2>
+<p>A plot according to the layered grammar of ggplot2 is the combination of (<em>nearly verbatim from the book</em>):</p>
+<blockquote>
+<ul>
+<li>Default <strong>dataset</strong> + set of mappings from variables to aesthetics.</li>
+<li>One or more <strong>layers</strong>. Each layer is composed of a <strong>geom</strong> (geometric object), a <strong>statistical transformation</strong> (e.g. data -&gt; spline smoothing line) and a <strong>position adjustment</strong> (position in queue of layers). Optionally, a different dataset and/or aesthetic mappings can be provided.</li>
+<li>One <strong>scale</strong> for each aesthetic mapping. A scale maps data to aesthetic attributes (like color, size, …) and every attribute requires a scale. The scale operates on all the data in the plot, thus ensuring consistency. A scale is a function and its inverse and parameters. The inverse is used to read values from the graph (axes for position scales or legends for other scales). Note that the inverse is not necessarily unique (i.e. the mapping is not one-to-one). Scaling is done before the statistical transformation.</li>
+<li>The <strong>coordinate system</strong>, or coord (e.g. Cartesian, polar, …). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations.</li>
+<li>The faceting specs. These are used for conditional graphs.</li>
+</ul>
+</blockquote>
+<p>The way these elements are encoded in R is with a list with components <code>data</code>, <code>mapping</code> (for the aesthetics), <code>layers</code>, <code>scales</code>, <code>coordinates</code>, <code>facet</code>, <span class="math inline">\(\dots\)</span>. This implies that the data is effectively stored in the plot object. This also imlies that a plot object can be printed (<code>print()</code>), saved (<code>ggsave</code> or <code>save</code>) and summarized (<code>summary</code>).</p>
+</div>
 
 
 
