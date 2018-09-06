@@ -262,6 +262,20 @@ $(document).ready(function () {
 </ul>
 </div>
 </div>
+<div id="ch-8-polishing-your-plots-for-publication" class="section level1">
+<h1>Ch 8: Polishing your plots for publication</h1>
+<ul>
+<li><p>Themes: these control plot aspects that are not data related. Examples are titles, fonts, labels, …</p></li>
+<li>Themes can be set globally (<code>theme_set</code>, the theme affects the plot when it is drawn, not when it is created) or by a layer (<code>+ theme</code>).</li>
+<li>Themes consist of elements (axis, legend, panel, plot, strip): <code>element.xxx</code>.</li>
+<li>These elements can be set by the elementary types (blank, line, rect, text): <code>element_typexxx</code>.</li>
+<li>If elements are left out (<code>element_blank</code>), ‘real estate’ might be reclaimed by other elements. To stop this use <code>NA</code> as an option.</li>
+<li>Use <code>theme_update</code> to change multiple settings at once.</li>
+<li><p>The book is seriously outdated with respect to the current (and future) ggplot2 implementation (<a href="https://github.com/wch/ggplot2/wiki/New-theme-system">Link</a>)</p></li>
+<li><p>Customising: note that <code>set_default_scale</code> has been deprecated.</p></li>
+<li><p>Saving: <code>ggsave</code> saves 1 plot. Multiple plots to 1 file need to be saved the conventional R way (<code>pdf();</code> <code>print(plot);</code> <code>dev.off()</code>)</p></li>
+</ul>
+</div>
 
 
 

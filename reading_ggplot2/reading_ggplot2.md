@@ -113,6 +113,24 @@ The `scales` parameter determines if the scales are fixed for all panels or are 
 * Statistics are calculated based on the Cartesian coordinates. 
 * There are arguments `xlim` and `ylim`. These arguments change the limits of the plot but do not alter the data that is displayed or used to calculate statistics. E.g. a smoother will be computed based on all the data, even when zoomed in on a particular region of the dataspace. Using limits in the scales will discard data such that the derived smoother is calculated based on the reduced dataset. 
 * Transformations work similarly as the limits. A common usage is to transform in a scale layer, compute statistics, backtransform with a coordinate layer for interpretation. 
+
+# Ch 8: Polishing your plots for publication
+
+* Themes: these control plot aspects that are not data related. Examples are titles, fonts, labels, ... 
+
+  + Themes can be set globally (`theme_set`, the theme affects the plot when it is 
+  drawn, not when it is created) or by a layer (`+ theme`). 
+  + Themes consist of elements (axis, legend, panel, plot, strip): `element.xxx`.
+  + These elements can be set by the elementary types (blank, line, rect, text): `element_typexxx`.
+  + If elements are left out (`element_blank`), 'real estate' might be reclaimed by other elements. To stop this use `NA` as an option.
+  + Use `theme_update` to change multiple settings at once. 
+  + The book is seriously outdated with respect to the current (and future) ggplot2 implementation ([Link](https://github.com/wch/ggplot2/wiki/New-theme-system))
+
+* Customising: note that `set_default_scale` has been deprecated. 
+
+* Saving: `ggsave` saves 1 plot. Multiple plots to 1 file need to be saved the conventional R way (`pdf();` `print(plot);` `dev.off()`)
+
+
   
   
    
