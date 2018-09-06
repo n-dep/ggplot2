@@ -92,3 +92,32 @@ Scales come, roughly, in 4 categories:
 4. Identity: Map data directly to aesthetics (e.g. your data already has a size variable).
 
 # Ch 7: Positioning
+
+## Faceting
+
+There are 2 types: `facet_grid` and `facet_wrap`.
+
+1. `facet_grid`:
+  + Lays plots out in 2D grid.
+  + Layout syntax: `rows ~ cols`. Use `.` for the default 1, e.g. `. ~ x` has a one row layout with multiple columns as specified by `x`. You can use `x + y` syntax to facet over multiple variables at once.
+  + The `margins` argument allows the addition of marginal plots.
+  + All panels in a single column need to have the same x scale and equivalently for rows and y scales.
+  + `space`: if `"free"` the columns (rows) will have proportional widths (heights).
+      
+2. `facet_wrap`:
+  + Creates a list of plots, which is subsequently wrapped into 2D.
+  + Will try to layout as a square, with a bias to more plots in the vertical direction.
+  
+The `scales` parameter determines if the scales are fixed for all panels or are free. Note also that faceting only works with variables in the data, not transformations.
+    
+## Coordinate systems:
+
+* There are 3 types of coordinate systems: the Cartesian (with the following flavors: `cartesian`, `equal`, `flip` and `trans`), map and polar. 
+* All can be called by `coord_xxx`. 
+* Transformations of the data can (will) change the geom's appearances as geoms are first represented as a combination of points, lines and polygons, which are then subsequently transformed to the new coordinate system. 
+* Statistics are calculated based on the Cartesian coordinates. 
+* There are arguments `xlim` and `ylim`. These arguments change the limits of the plot but do not alter the data that is displayed or used to calculate statistics. E.g. a smoother will be computed based on all the data, even when zoomed in on a particular region of the dataspace. Using limits in the scales will discard data such that the derived smoother is calculated based on the reduced dataset. 
+* Transformations work similarly as the limits. A common usage is to transform in a scale layer, compute statistics, backtransform with a coordinate layer for interpretation. 
+  
+  
+   

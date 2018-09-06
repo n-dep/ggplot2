@@ -228,6 +228,39 @@ $(document).ready(function () {
 </div>
 <div id="ch-7-positioning" class="section level1">
 <h1>Ch 7: Positioning</h1>
+<div id="faceting" class="section level2">
+<h2>Faceting</h2>
+<p>There are 2 types: <code>facet_grid</code> and <code>facet_wrap</code>.</p>
+<ol style="list-style-type: decimal">
+<li><code>facet_grid</code>:</li>
+</ol>
+<ul>
+<li>Lays plots out in 2D grid.</li>
+<li>Layout syntax: <code>rows ~ cols</code>. Use <code>.</code> for the default 1, e.g. <code>. ~ x</code> has a one row layout with multiple columns as specified by <code>x</code>. You can use <code>x + y</code> syntax to facet over multiple variables at once.</li>
+<li>The <code>margins</code> argument allows the addition of marginal plots.</li>
+<li>All panels in a single column need to have the same x scale and equivalently for rows and y scales.</li>
+<li><code>space</code>: if <code>&quot;free&quot;</code> the columns (rows) will have proportional widths (heights).</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><code>facet_wrap</code>:</li>
+</ol>
+<ul>
+<li>Creates a list of plots, which is subsequently wrapped into 2D.</li>
+<li>Will try to layout as a square, with a bias to more plots in the vertical direction.</li>
+</ul>
+<p>The <code>scales</code> parameter determines if the scales are fixed for all panels or are free. Note also that faceting only works with variables in the data, not transformations.</p>
+</div>
+<div id="coordinate-systems" class="section level2">
+<h2>Coordinate systems:</h2>
+<ul>
+<li>There are 3 types of coordinate systems: the Cartesian (with the following flavors: <code>cartesian</code>, <code>equal</code>, <code>flip</code> and <code>trans</code>), map and polar.</li>
+<li>All can be called by <code>coord_xxx</code>.</li>
+<li>Transformations of the data can (will) change the geom’s appearances as geoms are first represented as a combination of points, lines and polygons, which are then subsequently transformed to the new coordinate system.</li>
+<li>Statistics are calculated based on the Cartesian coordinates.</li>
+<li>There are arguments <code>xlim</code> and <code>ylim</code>. These arguments change the limits of the plot but do not alter the data that is displayed or used to calculate statistics. E.g. a smoother will be computed based on all the data, even when zoomed in on a particular region of the dataspace. Using limits in the scales will discard data such that the derived smoother is calculated based on the reduced dataset.</li>
+<li>Transformations work similarly as the limits. A common usage is to transform in a scale layer, compute statistics, backtransform with a coordinate layer for interpretation.</li>
+</ul>
+</div>
 </div>
 
 
