@@ -24,19 +24,19 @@ dsmall <- diamonds[sample(nrow(diamonds), 100), ] # small dataset from the book
 * You can't use base graphic commands (`lines()`, `points()`, ...) to add elements. You need to add layers according to the ggplot2 syntax.
 * Uses non-standard evaluation
 
-> All in all, it seems to be better to avoid `qplot` and use ggplot directly
+**All in all, it seems to be better to avoid `qplot` and use ggplot directly.**
 
 ## Ch 3: Mastering the grammar
 
 A plot according to the layered grammar of ggplot2 is the combination of (*nearly verbatim from the book*):
 
-> * Default **dataset** + set of mappings from variables to aesthetics.
-> * One or more **layers**. Each layer is composed of a **geom** (geometric object), a **statistical transformation** (stat for short, e.g. data -> spline smoothing line) and a **position adjustment** (adjustments to avoid overplotting). Optionally, a different dataset and/or aesthetic mappings can be provided. So, in effect, each different layer can have a different dataset and a different aesthetic mapping.
-> * One **scale** for each aesthetic mapping. A scale maps data to aesthetic attributes (like color, size, ...) and every attribute requires a scale. The scale operates on all the data in the plot, thus ensuring consistency. A scale is a function and its inverse and parameters. The inverse is used to read values from the graph (axes for position scales or legends for other scales). Note that the inverse is not necessarily unique (i.e. the mapping is not one-to-one). Scaling is done before the statistical transformation.
-> * The **coordinate system**, or coord (e.g. Cartesian, polar, ...). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations.
+* Default **dataset** + set of mappings from variables to aesthetics.
+* One or more **layers**. Each layer is composed of a **geom** (geometric object), a **statistical transformation** (stat for short, e.g. data -> spline smoothing line) and a **position adjustment** (adjustments to avoid overplotting). Optionally, a different dataset and/or aesthetic mappings can be provided. So, in effect, each different layer can have a different dataset and a different aesthetic mapping.
+* One **scale** for each aesthetic mapping. A scale maps data to aesthetic attributes (like color, size, ...) and every attribute requires a scale. The scale operates on all the data in the plot, thus ensuring consistency. A scale is a function and its inverse and parameters. The inverse is used to read values from the graph (axes for position scales or legends for other scales). Note that the inverse is not necessarily unique (i.e. the mapping is not one-to-one). Scaling is done before the statistical transformation.
+* The **coordinate system**, or coord (e.g. Cartesian, polar, ...). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations.
 > * The faceting specs. These are used for conditional graphs. 
 
-The way these elements are encoded in R is with a list with components `data`, `mapping` (for the aesthetics), `layers`, `scales`, `coordinates`, `facet`, $\dots$. This implies that the data is effectively stored in the plot object (as a copy, not a reference!). This also implies that a plot object can be printed (`print()`), saved (`ggsave` or `save`) and summarized (`summary`).
+The way these elements are encoded in R is with a list with components `data`, `mapping` (for the aesthetics), `layers`, `scales`, `coordinates`, `facet`, ... This implies that the data is effectively stored in the plot object (as a copy, not a reference!). This also implies that a plot object can be printed (`print()`), saved (`ggsave` or `save`) and summarized (`summary`).
 
 ## Ch 4: Build a plot layer by layer
 
@@ -54,4 +54,41 @@ The way these elements are encoded in R is with a list with components `data`, `
 
 * A stat computes, from the input data, a different dataset. This produced dataset can be used for plotting. The derived dataset can be used for plotting and variables must be between two sets of `..` to distinguish them from the original variables (with possibly the same name). Example: `ggplot(diamonds, aes(carat)) + geom_histogram(aes = ..density..)` where `..density`` is computed by the histogram geom.
 
+## Ch 6: Scales, axes and legends
 
+Without a scale, there can't be a transformation from data to aesthetics. Scales also produce a guide (axes and/or legends) to allow for inverse mapping.
+Scales have a domain, continuous (interval on the number line) or discrete (factor, character, logical). Scales have a range, which can also be divided in discrete and continuous. The process in going from the domain (obtained from the data) to the range (the aesthetics) has 3 stages:
+
+1. Transformation:
+  * Continuous domain.
+  * Example: log transformation.
+  * Note that statistical summaries in layers are computed on the transformed data.
+2. Training:
+  * The domain is learned. 
+  * This can be complex if there are multiple layers, accross multiple datasets in multiple panels.
+  * Can be overruled by manually setting limits in the scale layer. Values outside the domain are then mapped to `NA`.
+3. Mapping: Effectly apply the mapping from data to aesthetic values.
+
+Scales have the following naming scheme: `scale_<aesthetic_name>_<scale_name>`, e.g. `scale_color_continuous`.
+
+Common arguments to all scales are:
+
+* name: Labels for axes and legend. First argument of the scale layer. Can be a mathematical expression. Shortcuts: `xlab`, `ylab`, `labs`.
+* limits: Sets domain of scale. For continuous scales a length 2 vector. For discrete scales a character vector. Data outside the domain are not plotted.
+* breaks and labels: Determine the segmentation of an axis or legend and the corresponding labels.
+
+Scales come, roughly, in 4 categories: 
+
+1. Position: Map data to plot region and construct axes.
+  * 2 scales for each plot, horizontal and vertical.
+  
+    * limits: These are **not zooms** as in base plots. Data outside the limits are not plotted and are **not included in the statistical transformations**. Use `coord_cartesian()` for zooming.
+    * trans: Transform scale. This is equivalent to plotting the transformed input directly but the breaks and labels will be different. With transformed scales the labelling will be in the original data space. 
+2. Color: Map variables to colors.
+  * Continuous: 3 types of color gradients, `scale_color(or fill)_gradient`, `scale_color(or fill)_gradient2` and `scale_color(or fill)_gradientn`.
+  * Discrete: `scale_color(or fill)_hue` (default, picks evenly spaced on color wheel) or `scale_color(or fill)_brewer`. 
+3. Manual: Map discrete variables to symbol size, line type, shape, ..., and create the legend.
+  * Only discrete: `scale_shape_manual`, `scale_linetype_manual` and `scale_color_manual`.
+4. Identity: Map data directly to aesthetics (e.g. your data already has a size variable).
+
+# Ch 7: Positioning

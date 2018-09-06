@@ -11,7 +11,7 @@
 
 <meta name="author" content="ND" />
 
-<meta name="date" content="2018-09-05" />
+<meta name="date" content="2018-09-06" />
 
 <title>Reading ggplot2</title>
 
@@ -125,7 +125,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">Reading ggplot2</h1>
 <h3 class="subtitle"><em>Elegant Graphics for Data Analysis</em></h3>
 <h4 class="author"><em>ND</em></h4>
-<h4 class="date"><em>2018-09-05</em></h4>
+<h4 class="date"><em>2018-09-06</em></h4>
 
 </div>
 
@@ -140,23 +140,18 @@ $(document).ready(function () {
 <li>You can’t use base graphic commands (<code>lines()</code>, <code>points()</code>, …) to add elements. You need to add layers according to the ggplot2 syntax.</li>
 <li>Uses non-standard evaluation</li>
 </ul>
-<blockquote>
-<p>All in all, it seems to be better to avoid <code>qplot</code> and use ggplot directly</p>
-</blockquote>
+<p><strong>All in all, it seems to be better to avoid <code>qplot</code> and use ggplot directly.</strong></p>
 </div>
 <div id="ch-3-mastering-the-grammar" class="section level2">
 <h2>Ch 3: Mastering the grammar</h2>
 <p>A plot according to the layered grammar of ggplot2 is the combination of (<em>nearly verbatim from the book</em>):</p>
-<blockquote>
 <ul>
 <li>Default <strong>dataset</strong> + set of mappings from variables to aesthetics.</li>
 <li>One or more <strong>layers</strong>. Each layer is composed of a <strong>geom</strong> (geometric object), a <strong>statistical transformation</strong> (stat for short, e.g. data -&gt; spline smoothing line) and a <strong>position adjustment</strong> (adjustments to avoid overplotting). Optionally, a different dataset and/or aesthetic mappings can be provided. So, in effect, each different layer can have a different dataset and a different aesthetic mapping.</li>
 <li>One <strong>scale</strong> for each aesthetic mapping. A scale maps data to aesthetic attributes (like color, size, …) and every attribute requires a scale. The scale operates on all the data in the plot, thus ensuring consistency. A scale is a function and its inverse and parameters. The inverse is used to read values from the graph (axes for position scales or legends for other scales). Note that the inverse is not necessarily unique (i.e. the mapping is not one-to-one). Scaling is done before the statistical transformation.</li>
-<li>The <strong>coordinate system</strong>, or coord (e.g. Cartesian, polar, …). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations.</li>
-<li>The faceting specs. These are used for conditional graphs.</li>
+<li>The <strong>coordinate system</strong>, or coord (e.g. Cartesian, polar, …). The coordinate system affect all posision variables. They differ from scales as they change the appearance of geoms. Coordinate transformations are done after the statistical transformations. &gt; * The faceting specs. These are used for conditional graphs.</li>
 </ul>
-</blockquote>
-<p>The way these elements are encoded in R is with a list with components <code>data</code>, <code>mapping</code> (for the aesthetics), <code>layers</code>, <code>scales</code>, <code>coordinates</code>, <code>facet</code>, <span class="math inline">\(\dots\)</span>. This implies that the data is effectively stored in the plot object (as a copy, not a reference!). This also implies that a plot object can be printed (<code>print()</code>), saved (<code>ggsave</code> or <code>save</code>) and summarized (<code>summary</code>).</p>
+<p>The way these elements are encoded in R is with a list with components <code>data</code>, <code>mapping</code> (for the aesthetics), <code>layers</code>, <code>scales</code>, <code>coordinates</code>, <code>facet</code>, … This implies that the data is effectively stored in the plot object (as a copy, not a reference!). This also implies that a plot object can be printed (<code>print()</code>), saved (<code>ggsave</code> or <code>save</code>) and summarized (<code>summary</code>).</p>
 </div>
 <div id="ch-4-build-a-plot-layer-by-layer" class="section level2">
 <h2>Ch 4: Build a plot layer by layer</h2>
@@ -173,6 +168,66 @@ $(document).ready(function () {
 <li><p>For these collective geoms the individual aesthetics can’t be used all together. For lines (defined by 2 points) the aesthetics of the first point are used. For other collective geoms the default aesthetics are used unless all components share the same aesthetics.</p></li>
 <li><p>A stat computes, from the input data, a different dataset. This produced dataset can be used for plotting. The derived dataset can be used for plotting and variables must be between two sets of <code>..</code> to distinguish them from the original variables (with possibly the same name). Example: <code>ggplot(diamonds, aes(carat)) + geom_histogram(aes = ..density..)</code> where `..density`` is computed by the histogram geom.</p></li>
 </ul>
+</div>
+<div id="ch-6-scales-axes-and-legends" class="section level2">
+<h2>Ch 6: Scales, axes and legends</h2>
+<p>Without a scale, there can’t be a transformation from data to aesthetics. Scales also produce a guide (axes and/or legends) to allow for inverse mapping. Scales have a domain, continuous (interval on the number line) or discrete (factor, character, logical). Scales have a range, which can also be divided in discrete and continuous. The process in going from the domain (obtained from the data) to the range (the aesthetics) has 3 stages:</p>
+<ol style="list-style-type: decimal">
+<li>Transformation:</li>
+</ol>
+<ul>
+<li>Continuous domain.</li>
+<li>Example: log transformation.</li>
+<li>Note that statistical summaries in layers are computed on the transformed data.</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Training:</li>
+</ol>
+<ul>
+<li>The domain is learned.</li>
+<li>This can be complex if there are multiple layers, accross multiple datasets in multiple panels.</li>
+<li>Can be overruled by manually setting limits in the scale layer. Values outside the domain are then mapped to <code>NA</code>.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Mapping: Effectly apply the mapping from data to aesthetic values.</li>
+</ol>
+<p>Scales have the following naming scheme: <code>scale_&lt;aesthetic_name&gt;_&lt;scale_name&gt;</code>, e.g. <code>scale_color_continuous</code>.</p>
+<p>Common arguments to all scales are:</p>
+<ul>
+<li>name: Labels for axes and legend. First argument of the scale layer. Can be a mathematical expression. Shortcuts: <code>xlab</code>, <code>ylab</code>, <code>labs</code>.</li>
+<li>limits: Sets domain of scale. For continuous scales a length 2 vector. For discrete scales a character vector. Data outside the domain are not plotted.</li>
+<li>breaks and labels: Determine the segmentation of an axis or legend and the corresponding labels.</li>
+</ul>
+<p>Scales come, roughly, in 4 categories:</p>
+<ol style="list-style-type: decimal">
+<li>Position: Map data to plot region and construct axes.</li>
+</ol>
+<ul>
+<li><p>2 scales for each plot, horizontal and vertical.</p>
+<ul>
+<li>limits: These are <strong>not zooms</strong> as in base plots. Data outside the limits are not plotted and are <strong>not included in the statistical transformations</strong>. Use <code>coord_cartesian()</code> for zooming.</li>
+<li>trans: Transform scale. This is equivalent to plotting the transformed input directly but the breaks and labels will be different. With transformed scales the labelling will be in the original data space.</li>
+</ul></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Color: Map variables to colors.</li>
+</ol>
+<ul>
+<li>Continuous: 3 types of color gradients, <code>scale_color(or fill)_gradient</code>, <code>scale_color(or fill)_gradient2</code> and <code>scale_color(or fill)_gradientn</code>.</li>
+<li>Discrete: <code>scale_color(or fill)_hue</code> (default, picks evenly spaced on color wheel) or <code>scale_color(or fill)_brewer</code>.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Manual: Map discrete variables to symbol size, line type, shape, …, and create the legend.</li>
+</ol>
+<ul>
+<li>Only discrete: <code>scale_shape_manual</code>, <code>scale_linetype_manual</code> and <code>scale_color_manual</code>.</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>Identity: Map data directly to aesthetics (e.g. your data already has a size variable).</li>
+</ol>
+</div>
+<div id="ch-7-positioning" class="section level1">
+<h1>Ch 7: Positioning</h1>
 </div>
 
 
