@@ -2,7 +2,7 @@
 title: "Reading ggplot2" 
 subtitle: "Elegant Graphics for Data Analysis"
 author: "ND"
-date: '2018-09-06'
+date: '2018-09-07'
 output: 
   html_document:
     keep_md: true
@@ -130,7 +130,12 @@ The `scales` parameter determines if the scales are fixed for all panels or are 
 
 * Saving: `ggsave` saves 1 plot. Multiple plots to 1 file need to be saved the conventional R way (`pdf();` `print(plot);` `dev.off()`)
 
+# Ch 10: Reducing duplication
 
+1. Iteration: The last lot is automatically copied every time a new plot is plotted or modified. This plot can be called and then modified by `last_plot()`. This should obviously only be used in interactive mode. 
+2. Plot templates: Every component of a ggplot plot is its own object. These objects can be stored and added to different plots. This can help if specific elements are reused often. This can be extended to using vectors of components.
+3. Plot functions: 
+  
   
   
    

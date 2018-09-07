@@ -11,7 +11,7 @@
 
 <meta name="author" content="ND" />
 
-<meta name="date" content="2018-09-06" />
+<meta name="date" content="2018-09-07" />
 
 <title>Reading ggplot2</title>
 
@@ -125,7 +125,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">Reading ggplot2</h1>
 <h3 class="subtitle"><em>Elegant Graphics for Data Analysis</em></h3>
 <h4 class="author"><em>ND</em></h4>
-<h4 class="date"><em>2018-09-06</em></h4>
+<h4 class="date"><em>2018-09-07</em></h4>
 
 </div>
 
@@ -275,6 +275,14 @@ $(document).ready(function () {
 <li><p>Customising: note that <code>set_default_scale</code> has been deprecated.</p></li>
 <li><p>Saving: <code>ggsave</code> saves 1 plot. Multiple plots to 1 file need to be saved the conventional R way (<code>pdf();</code> <code>print(plot);</code> <code>dev.off()</code>)</p></li>
 </ul>
+</div>
+<div id="ch-10-reducing-duplication" class="section level1">
+<h1>Ch 10: Reducing duplication</h1>
+<ol style="list-style-type: decimal">
+<li>Iteration: The last lot is automatically copied every time a new plot is plotted or modified. This plot can be called and then modified by <code>last_plot()</code>. This should obviously only be used in interactive mode.</li>
+<li>Plot templates: Every component of a ggplot plot is its own object. These objects can be stored and added to different plots. This can help if specific elements are reused often. This can be extended to using vectors of components.</li>
+<li>Plot functions:</li>
+</ol>
 </div>
 
 
